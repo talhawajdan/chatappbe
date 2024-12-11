@@ -21,7 +21,7 @@ export const emitEvent = (req: any, event: any, users: any, data?: any) => {
 const ioServer = async (server: any, app: any) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://chatappfe-three.vercel.app",
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
