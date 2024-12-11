@@ -1,6 +1,6 @@
 export default {
   port: 8080,
-  dbUrl: "mongodb://localhost:27017/chateeapp",
+  dbUrl: "mongodb+srv://officetalha7:aJjklPCGTlKKcViV@chaeeapp.tqk6p.mongodb.net/",
   saltWorkFactor: 10,
   jwt_secret: "CHATEE_SECRET",
   cloudinary_cloud_name: "dcqieznto",
