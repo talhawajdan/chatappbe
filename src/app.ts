@@ -38,3 +38,5 @@ server.listen(port, async () => {
   route(app as Express);
   swagger(app);
 });
+
+export default app;
