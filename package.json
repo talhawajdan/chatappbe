@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/app.ts",
     "build": "tsc",
-    "start": "ts-node-dev  -r tsconfig-paths/register build/src/app.js"
+    "start": "ts-node-dev  -r tsconfig-paths/register src/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
+    "@vercel/node": "^3.2.29",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cloudinary": "^2.5.1",
