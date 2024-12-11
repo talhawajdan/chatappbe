@@ -1,0 +1,449 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateUserInput:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+        - phone
+        - passwordConfirmation
+        - dob
+      properties:
+        email:
+          type: string
+          default: dannyalbus@yopmail.com
+        firstName:
+          type: string
+          default: danny
+        lastName:
+          type: string
+          default: albus
+        password:
+          type: string
+          default: stringPassword123
+        phone:
+          type: string
+          default: +442255789
+        passwordConfirmation:
+          type: string
+          default: stringPassword123
+        dob:
+          type: string
+          format: date
+          default: 1997-01-29
+
+    CreateUserResponse:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        _id:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    loginUserInput:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          default: dannyalbus@yopmail.com
+        password:
+          type: string
+          default: stringPassword123
+
+    loginUserResponse:
+      type: object
+      properties:
+        authToken:
+          type: string
+        refreshToken:
+          type: string
+
+    verifyTokenInput:
+      type: object
+      required:
+        - refreshToken
+        - userId
+      properties:
+        refreshToken:
+          type: string
+          default: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        userId:
+          type: string
+          default: 6746c0ae5099a0f8c80de7eb
+
+    createRequestInput:
+
+      type: object
+      required:
+        - receiverId
+      properties:
+        receiverId:
+          type: string
+
+    createChat:
+      type: object
+      required:
+        - name
+        - members
+        - groupChat
+      properties:
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: string
+        groupChat:
+          type: boolean
+    
+    DeleteChat:
+      type: object
+      required:
+        - chatId
+      properties:
+        chatId:
+          type: string
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserInput"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        409:
+          description: Conflict
+        400:
+          description: Bad request
+
+  /auth/signin:
+    put:
+      tags:
+        - Authentication
+      summary: Login user to the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginUserInput"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginUserResponse"
+        409:
+          description: Conflict
+        400:
+          description: Bad request
+
+  /auth/refresh-token:
+    put:
+      tags:
+        - Authentication
+      summary: Refresh token API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/verifyTokenInput"
+      responses:
+        200:
+          description: Success
+        409:
+          description: Conflict
+        400:
+          description: Bad request
+
+  /notification/get-notifications:
+    get:
+      tags:
+        - Notification
+      summary: Get user notifications
+      description: Retrieve a paginated list of notifications.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 10
+      responses:
+        200:
+          description: Users found successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Notifications found"
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
+
+  /request/create:
+    post:
+      tags:
+        - Request
+      summary: Create a request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createRequestInput"
+      responses:
+        200:
+          description: Success
+
+  /request/accept:
+    post:
+      tags:
+        - Request
+      summary: Accept a request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - receiverId
+                - requestId
+              properties:
+                receiverId:
+                  type: string
+                requestId:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Request accepted successfully."
+                  status:
+                    type: string
+                    example: "success"
+
+  /settings/contacts:
+    get:
+      tags:
+        - Settings
+      summary: Search for contacts
+      description: Retrieve a paginated list of users based on a search query.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            example: ""
+      responses:
+        200:
+          description: Contacts found successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "contacts found"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "12345"
+                        name:
+                          type: string
+                          example: "John Doe"
+                        email:
+                          type: string
+                          example: "john.doe@example.com"
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
+  /settings/contact:
+    delete:
+      tags:
+        - Settings
+      summary: Delete a contact
+      description: "delete contact"
+      parameters:
+        [
+          {
+            name: contactId,
+            in: query,
+            required: true,
+            schema: { type: string },
+          },
+        ]
+      responses:
+        "200":
+          description: OK
+  /contacts:
+    get:
+      tags:
+        - Contacts
+      summary: Get contacts
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: OK
+  /chats:
+    get:
+      tags:
+        - Chats
+      summary: Get chats
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /chats/create:
+    post:
+      tags:
+        - Chats
+      summary: Create a chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createChat'
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /chats/delete:
+    delete:
+      tags:
+        - Chats
+      summary: Delete a chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteChat'
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /chats/singleChat:
+    get:
+      tags:
+        - Chats
+      summary: Get single chat
+      parameters:
+        - name: chatId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /message:
+    get:
+      tags:
+        - Message
+      summary: Get messages
+      description: ''
+      parameters: 
+        - name: chatId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+  
+
+ 
