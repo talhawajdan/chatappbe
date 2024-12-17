@@ -2,11 +2,9 @@ import { HttpStatusCode } from "@enums/statusCode";
 import chatModel from "@models/chat.model";
 import messageModel from "@models/message.model";
 import {
-  deleteFilesFromCloudinary,
   sendErrorResponse,
   sendSuccessResponse,
-  tryCatchWrapper,
-  uploadFilesToCloudinary,
+  tryCatchWrapper
 } from "@utils/helper";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
@@ -27,10 +25,38 @@ const GetAllChatsHandler = tryCatchWrapper(async function (
     },
     {
       $lookup: {
-        from: "users", // Assuming the "users" collection contains the member details
-        localField: "members", // Field in chats model
-        foreignField: "_id", // Field in the users collection
-        as: "members", // The array that will store the populated user data
+        from: "users",
+        localField: "members",
+        foreignField: "_id",
+        as: "members",
+      },
+    },
+    {
+      $lookup: {
+        from: "messages", // Ensure the collection name is correct
+        let: { chatId: "$_id" }, // Pass the current chat ID to the lookup
+        pipeline: [
+          { $match: { $expr: { $eq: ["$chat", "$$chatId"] } } }, // Match messages for the current chat
+          { $sort: { createdAt: -1 } }, // Sort messages by creation date in descending order
+          { $limit: 1 },
+          
+        ],
+        as: "Message",
+      },
+    },
+    {
+      $addFields: {
+        latestMessage: {
+          $cond: {
+            if: { $gt: [{ $size: "$Message" }, 0] }, // Check if there are any messages
+            then: {
+              content: { $arrayElemAt: ["$Message.content", 0] },
+              sender: { $arrayElemAt: ["$Message.sender", 0] }, // Include sender info if you need it
+              createdAt: { $arrayElemAt: ["$Message.createdAt", 0] }, // Include sender info if you need it
+            },
+            else: null, // If no messages, set latestMessage to null
+          },
+        },
       },
     },
     {
@@ -50,6 +76,7 @@ const GetAllChatsHandler = tryCatchWrapper(async function (
       $project: {
         name: 1,
         groupChat: 1,
+        latestMessage: 1,
         "members._id": 1,
         "members.firstName": 1,
         "members.lastName": 1,
@@ -58,6 +85,7 @@ const GetAllChatsHandler = tryCatchWrapper(async function (
       },
     },
   ]);
+
 
   if (!chats || chats.length === 0) {
     return sendErrorResponse(res, HttpStatusCode.BadRequest, "No chats found");
@@ -104,6 +132,7 @@ const GetSingleChatHandler = tryCatchWrapper(async function (
        $project: {
          name: 1,
          groupChat: 1,
+         isdisabled: 1,
          "members._id": 1,
          "members.firstName": 1,
          "members.lastName": 1,
@@ -168,8 +197,5 @@ const DeleteChatHandler = tryCatchWrapper(async function (
 });
 
 export {
-  GetAllChatsHandler,
-  PostCreateChatHandler,
-  DeleteChatHandler,
-  GetSingleChatHandler,
+  DeleteChatHandler, GetAllChatsHandler, GetSingleChatHandler, PostCreateChatHandler
 };

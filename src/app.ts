@@ -1,5 +1,4 @@
-
-// import validateJsonFunction from "@middlewares/validateJsonFormat";
+import { validateJsonFunction } from "@middlewares/validateJsonFormat";
 import route from "@root/src/routes/routes";
 import connectDB from "@utils/connect";
 import logger from "@utils/logger";
@@ -31,7 +30,7 @@ cloudinary.config({
 // middleware to parse urlencoded request body
 app.use(bodyParser.urlencoded({ extended: true }));
 // Middleware to handle JSON parsing errors
-// app.use(validateJsonFunction);
+app.use(validateJsonFunction);
 app.use(cors());
 server.listen(port, async () => {
   await connectDB();
@@ -39,5 +38,3 @@ server.listen(port, async () => {
   route(app as Express);
   swagger(app);
 });
-
-export default app;

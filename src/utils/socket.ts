@@ -51,10 +51,12 @@ const ioServer = async (server: any, app: any) => {
     socket.on(socketEvent.NewMessage, async ({ chatId, members, message }) => {
       const messageForRealTime = {
         content: message,
+        latestMessage: message,
         _id: uuid(),
         sender: {
           _id: user._id,
-          name: user.name,
+          firstName: user.firstName,
+          avatar: user.avatar
         },
         chat: chatId,
         createdAt: new Date().toISOString(),
@@ -69,7 +71,10 @@ const ioServer = async (server: any, app: any) => {
         chatId,
         message: messageForRealTime,
       });
-      io.to(membersSocket).emit(socketEvent.NewMessageAlert, { chatId });
+      io.to(membersSocket).emit(socketEvent.NewMessageAlert, {
+        chatId,
+        message: messageForRealTime,
+    });
       try {
         await messageModel.create(messageForDB);
       } catch (error: any) {
