@@ -92,7 +92,6 @@ components:
           default: 6746c0ae5099a0f8c80de7eb
 
     createRequestInput:
-
       type: object
       required:
         - receiverId
@@ -115,7 +114,57 @@ components:
             type: string
         groupChat:
           type: boolean
-    
+    createGroupChat:
+      type: object
+      required:
+        - name
+        - members
+      properties:
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: string
+    updateGroupChatName:
+      type: object
+      required:
+        - chatId
+        - NewGroupName
+      properties:
+        chatId:
+          type: string
+          default: 5f9b1b7b7b7b7b7b7b7b7b7
+        NewGroupName:
+          type: string
+          default: updatedGroupName
+    updateGroupChatCreator:
+      type: object
+      required:
+        - chatId
+        - newCreatorId
+      properties:
+        chatId:
+          type: string
+          default: 5f9b1b7b7b7b7b7b7b7b7b7
+        newCreatorId:
+          type: string
+          default: 5f9b1b7b7b7b7b7b7b7b7b7
+    updateGroupChatMembers:
+      type: object
+      required:
+        - chatId
+        - newMembers
+      properties:
+        chatId:
+          type: string
+          default: 5f9b1b7b7b7b7b7b7b7b7b7
+        newMembers:
+          type: array
+          items:
+            type: string
+            default: 5f9b1b7b7b7b7b7b7b7b7b7
+
     DeleteChat:
       type: object
       required:
@@ -123,6 +172,26 @@ components:
       properties:
         chatId:
           type: string
+
+    UpdateUserProfile:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        dob:
+          type: string
+          format: date
+
 security:
   - bearerAuth: []
 
@@ -369,10 +438,10 @@ paths:
       tags:
         - Chats
       summary: Get chats
-      description: ''
+      description: ""
       parameters: []
       responses:
-        '200':
+        "200":
           description: OK
   /chats/create:
     post:
@@ -384,10 +453,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/createChat'
+              $ref: "#/components/schemas/createChat"
       parameters: []
       responses:
-        '200':
+        "200":
           description: OK
   /chats/delete:
     delete:
@@ -399,11 +468,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteChat'
-      description: ''
+              $ref: "#/components/schemas/DeleteChat"
+      description: ""
       parameters: []
       responses:
-        '200':
+        "200":
           description: OK
   /chats/singleChat:
     get:
@@ -417,15 +486,15 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
   /message:
     get:
       tags:
         - Message
       summary: Get messages
-      description: ''
-      parameters: 
+      description: ""
+      parameters:
         - name: chatId
           in: query
           required: true
@@ -442,8 +511,156 @@ paths:
           schema:
             type: number
       responses:
+        "200":
+          description: OK
+  /user/get-profile:
+    get:
+      tags:
+        - User
+      summary: Get user profile
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: OK
+  /user/update-profile:
+    put:
+      summary: Update user profile
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: ID of the user to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfile"
+      responses:
+        "200":
+          description: User updated successfully
+        "400":
+          description: User not found or bad request
+  /user/search:
+    get:
+      tags:
+        - user
+      summary: Search for users
+      description: Retrieve a paginated list of users based on a search query.
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "John"
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+            example: 10
+      responses:
+        "200":
+          description: Users found successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "users found"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "12345"
+                        name:
+                          type: string
+                          example: "John Doe"
+                        email:
+                          type: string
+                          example: "john.doe@example.com"
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+  /chats/groupChat:
+    post:
+      tags:
+        - Chats
+      summary: Create a group chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createGroupChat"
+      parameters: []
+      responses:
+        "200":
+          description: OK
+  /chats/updateGroupChatName:
+    patch:
+      tags:
+        - Chats
+      summary: Update group chat name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateGroupChatName"
+      parameters: []
+      responses:
         '200':
           description: OK
-  
+  /chats/updateGroupChatCreator:
+    patch:
+      tags:
+        - Chats
+      summary: Update group chat creator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateGroupChatCreator"
+      parameters: []
+      responses:
+        '200':
+          description: OK
 
- 
+  /chats/updateGroupChatMembers:
+    patch:
+      tags:
+        - Chats
+      summary: Update group chat members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateGroupChatMembers"
+      parameters: []
+      responses:
+        '200':
+          description: OK

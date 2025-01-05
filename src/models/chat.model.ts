@@ -5,6 +5,11 @@ export interface IChat {
   groupChat: boolean;
   creator: string;
   members: string[];
+  isdisabled: boolean;
+  GroupAvatar?: {
+    public_id?: string;
+    url?: string;
+  };
 }
 export interface ChatDocument extends IChat, mongoose.Document {
   createdAt: Date;
@@ -12,6 +17,10 @@ export interface ChatDocument extends IChat, mongoose.Document {
 }
 const chatSchema = new mongoose.Schema(
   {
+    isdisabled: {
+      type: Boolean,
+      default: false,
+    },
     name: {
       type: String,
       required: true,
@@ -24,6 +33,15 @@ const chatSchema = new mongoose.Schema(
       type: Types.ObjectId,
       ref: "User",
     },
+    GroupAvatar: {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
+    },
+
     members: [
       {
         type: Types.ObjectId,

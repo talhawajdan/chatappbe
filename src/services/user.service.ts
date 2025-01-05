@@ -106,15 +106,39 @@ async function searchUsers(
                 pipeline: [
                   {
                     $match: {
-                      $or: [
-                        { $expr: { $eq: ["$receiver", "$$userId"] } },
-                        { $expr: { $eq: ["$sender", "$$userId"] } },
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ["$receiver", "$$userId"],
+                          },
+                        },
+                        {
+                          $expr: {
+                            $eq: [
+                              "$sender",
+                              new mongoose.Types.ObjectId(userId),
+                            ],
+                          },
+                        },
                       ],
                     },
                   },
-                  { $project: { _id: 1, hasRequest: "true" } }, // Keep only the `_id` field to minimize data
+                  {
+                    $project: { _id: 1, hasRequest: "true" },
+                  },
                 ],
                 as: "matchedRequests",
+              },
+            },
+            {
+              $addFields: {
+                hasRequest: {
+                  $cond: {
+                    if: { $gt: [{ $size: "$matchedRequests" }, 0] },
+                    then: true,
+                    else: false,
+                  },
+                },
               },
             },
             {
@@ -123,9 +147,7 @@ async function searchUsers(
                 lastName: 1,
                 "avatar.url": 1,
                 email: 1,
-                hasRequest: {
-                  $toBool: { $arrayElemAt: ["$matchedRequests.hasRequest", 0] },
-                },
+                hasRequest: 1,
               },
             },
             {
@@ -274,10 +296,10 @@ async function removeFriend(userId: string, friendId: string) {
 
 async function getUsersFriendsList(userId: string) {
   try {
-    const user: any = await UserModel.findById(userId, { friends: 1, _id: 0 }).populate(
-      "friends",
-      { firstName: 1, lastName: 1, email: 1, avatar: 1 }
-    );
+    const user: any = await UserModel.findById(userId, {
+      friends: 1,
+      _id: 0,
+    }).populate("friends", { firstName: 1, lastName: 1, email: 1, avatar: 1 });
 
     if (!user) {
       throw new Error("User not found");

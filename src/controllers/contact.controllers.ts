@@ -1,11 +1,9 @@
 import { HttpStatusCode } from "@enums/statusCode";
 import { getUsersFriendsList } from "@services/user.service";
 import {
-  deleteFilesFromCloudinary,
   sendErrorResponse,
   sendSuccessResponse,
-  tryCatchWrapper,
-  uploadFilesToCloudinary,
+  tryCatchWrapper
 } from "@utils/helper";
 import { Request, Response } from "express";
 

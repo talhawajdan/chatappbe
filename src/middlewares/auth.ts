@@ -3,6 +3,7 @@ import { sendErrorResponse, varifyToken } from "@utils/helper";
 import { Request, Response, NextFunction } from "express";
 interface AuthenticatedRequest extends Request {
   userId: string;
+  user:any;
 }
 
 const isAuthenticated = (
@@ -28,6 +29,7 @@ const isAuthenticated = (
       );
     }
     req.userId = decodedToken._id;
+    req.user = decodedToken;
     next();
   } catch (e: any) {
    console.error(e,"Error")
