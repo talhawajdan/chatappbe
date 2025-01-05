@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { varifyToken } from "./helper";
 import { socketEvent } from "@enums/event";
 import { v4 as uuid } from "uuid";
+import config from "config";
 import messageModel from "@models/message.model";
 
 export const connectedUsers: any = {};
@@ -19,9 +20,10 @@ export const emitEvent = (req: any, event: any, users: any, data?: any) => {
   io.to(usersSocket).emit(event, data);
 };
 const ioServer = async (server: any, app: any) => {
+  const fe_url = config.get<string>("fe_url");
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: fe_url ? fe_url : "http://localhost:3000",
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
