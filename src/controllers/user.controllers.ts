@@ -11,7 +11,7 @@ import {
   sendErrorResponse,
   sendSuccessResponse,
   tryCatchWrapper,
-  uploadFilesToCloudinary,
+  uploadFilesToCloudinary
 } from "@utils/helper";
 import { Request, Response } from "express";
 interface CustomRequest extends Request {
@@ -133,8 +133,8 @@ const SearchUserHandler = tryCatchWrapper(async function (
   const { search = "" }: any = req.query;
   let { page = 1, limit = 10 }: any = req.query;
   const userId = req.userId;
-
-  limit = Number(limit);
+  
+  limit = Number(limit) 
 
   const skip = (page - 1) * limit;
   const { user, totalPages, total } = await searchUsers(
@@ -150,14 +150,10 @@ const SearchUserHandler = tryCatchWrapper(async function (
       limit,
       totalPages,
       total,
-    },
+    }
   });
 });
 
 export {
-  GetUserProfileDetailsHandler,
-  SearchUserHandler,
-  UpdateUserProfileHandler,
-  UserProfileDeleteImgHandler,
-  UserProfileImgHandler,
+  GetUserProfileDetailsHandler, SearchUserHandler, UpdateUserProfileHandler, UserProfileDeleteImgHandler, UserProfileImgHandler
 };

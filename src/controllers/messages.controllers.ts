@@ -30,10 +30,10 @@ const GetMessagesHandler = tryCatchWrapper(
     const [messages, totalMessagesCount] = await Promise.all([
       messageModel
         .find({ chat: chatId })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("sender")
+        .populate("sender", "name")
         .lean(),
       messageModel.countDocuments({ chat: chatId }),
     ]);

@@ -13,7 +13,7 @@ import {
   tryCatchWrapper,
 } from "@utils/helper";
 import bcrypt from "bcrypt";
-import { first, omit } from "lodash";
+import { omit } from "lodash";
 import { CreateUserInput } from "../schema/user.schema";
 
 const createUserHandler = tryCatchWrapper(
@@ -60,7 +60,7 @@ const LoginUserHandler = tryCatchWrapper(
     }
 
     // Generate tokens
-    const tokens = generateTokens({ _id: user._id, email: user.email,firstName:user.firstName,lastName:user.lastName ,avatar:user.avatar });
+    const tokens = generateTokens({ _id: user._id, email: user.email });
     const payload = {
       ...tokens,
       user: omit(user, "password"),

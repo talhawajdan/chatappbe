@@ -1,5 +1,5 @@
+import e from "express";
 import mongoose, { Types } from "mongoose";
-
 
 export interface IMessage {
   content: string;
@@ -18,10 +18,7 @@ export interface MessageDocument extends IMessage, mongoose.Document {
 const messageSchema = new mongoose.Schema(
   {
     content: String,
-    system: {
-      type: Boolean,
-      default: false,
-    },
+
     attachments: [
       {
         public_id: {
@@ -38,7 +35,7 @@ const messageSchema = new mongoose.Schema(
     sender: {
       type: Types.ObjectId,
       ref: "User",
-      required: false,
+      required: true,
     },
     chat: {
       type: Types.ObjectId,

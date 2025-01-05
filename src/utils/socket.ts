@@ -43,42 +43,33 @@ const ioServer = async (server: any, app: any) => {
     const user = socket.user;
     connectedUsers[user._id] = socket.id;
     const users = GetUserSocketId([socket.user._id]);
-    console.log("connectedUsers", connectedUsers);
-    console.log("connectedUsersddd", Object.keys(connectedUsers));
     console.log("users", users);
-    
     io.emit(socketEvent.onlineUsers, Object.keys(connectedUsers));
-    
+    socket.on(socketEvent.onlineUsers, () => {
+      io.emit(socketEvent.onlineUsers, Object.keys(connectedUsers));
+    });
     socket.on(socketEvent.NewMessage, async ({ chatId, members, message }) => {
       const messageForRealTime = {
         content: message,
-        latestMessage: message,
         _id: uuid(),
         sender: {
           _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          avatar: user.avatar,
+          name: user.name,
         },
         chat: chatId,
-        system: false,
         createdAt: new Date().toISOString(),
       };
       const messageForDB = {
         content: message,
         sender: user._id,
         chat: chatId,
-        system: false,
       };
       const membersSocket = GetUserSocketId(members);
       io.to(membersSocket).emit(socketEvent.NewMessage, {
         chatId,
         message: messageForRealTime,
       });
-      io.to(membersSocket).emit(socketEvent.NewMessageAlert, {
-        chatId,
-        message: messageForRealTime,
-    });
+      io.to(membersSocket).emit(socketEvent.NewMessageAlert, { chatId });
       try {
         await messageModel.create(messageForDB);
       } catch (error: any) {

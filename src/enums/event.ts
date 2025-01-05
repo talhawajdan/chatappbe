@@ -10,7 +10,6 @@ export enum socketEvent {
   onlineUsers = "onlineUsers",
   typing = "typing",
   stopTyping = "stopTyping",
-  refetchRequest = "refetchRequest",
 }
 
 export enum ToastMessageType {
