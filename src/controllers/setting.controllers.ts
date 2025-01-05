@@ -69,6 +69,7 @@ const removeContactHandler = tryCatchWrapper(async function (
     );
   }
   const chat = await chatModel.findOne({
+    groupChat: false,
     members: { $all: [userId, contactId] },
   });
   if (!chat) {
@@ -88,12 +89,14 @@ const removeContactHandler = tryCatchWrapper(async function (
       _id: userId,
       name: user.name,
     },
+    system: true,
     createdAt: new Date().toISOString(),
   };
   const messageForDb = {
     content: "You have been removed from the friend list This chat is disabled",
     chat: chat._id,
     sender: userId,
+    system: true,
   };
   emitEvent(req, socketEvent.NewMessage, [userId, contactId], {
     chatId: chat._id,

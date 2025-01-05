@@ -26,5 +26,58 @@ const getASingleChat = object({
       required_error: "Chat Id is required",
     }),
   }),
-})
-export { createChat, deleteChat, getASingleChat };
+});
+const CreateGroupChat = object({
+  body: object({
+    name: string({
+      required_error: "Name is required",
+    }),
+    members: array(
+      string({
+        required_error: "Members are required",
+      })
+    ).min(2, "At least 2 member is required"),
+  }),
+});
+const UpdateGroupChatName = object({
+  body: object({
+    chatId: string({
+      required_error: "Chat Id is required",
+    }),
+    NewGroupName: string({
+      required_error: "NewGroupName is required",
+    }),
+  }),
+});
+const UpdateGroupChatCreator = object({
+  body: object({
+    chatId: string({
+      required_error: "chatId is required",
+    }),
+    newCreatorId: string({
+      required_error: "newCreatorId is required",
+    }),
+  }),
+});
+const updateGroupChatMembers = object({
+  body: object({
+    chatId: string({
+      required_error: "chatId is required",
+    }),
+    newMembers: array(
+      string({
+        required_error: "Members are required",
+      })
+    ).min(2, "At least 2 member is required"),
+  }),
+});
+
+export {
+  createChat,
+  deleteChat,
+  getASingleChat,
+  CreateGroupChat,
+  UpdateGroupChatName,
+  UpdateGroupChatCreator,
+  updateGroupChatMembers,
+};

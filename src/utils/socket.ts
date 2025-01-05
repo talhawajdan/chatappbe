@@ -21,7 +21,7 @@ export const emitEvent = (req: any, event: any, users: any, data?: any) => {
 const ioServer = async (server: any, app: any) => {
   const io = new Server(server, {
     cors: {
-      origin: "https://chatappfe-three.vercel.app",
+      origin: "http://localhost:3000",
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
@@ -43,11 +43,12 @@ const ioServer = async (server: any, app: any) => {
     const user = socket.user;
     connectedUsers[user._id] = socket.id;
     const users = GetUserSocketId([socket.user._id]);
+    console.log("connectedUsers", connectedUsers);
+    console.log("connectedUsersddd", Object.keys(connectedUsers));
     console.log("users", users);
+    
     io.emit(socketEvent.onlineUsers, Object.keys(connectedUsers));
-    socket.on(socketEvent.onlineUsers, () => {
-      io.emit(socketEvent.onlineUsers, Object.keys(connectedUsers));
-    });
+    
     socket.on(socketEvent.NewMessage, async ({ chatId, members, message }) => {
       const messageForRealTime = {
         content: message,
@@ -56,15 +57,18 @@ const ioServer = async (server: any, app: any) => {
         sender: {
           _id: user._id,
           firstName: user.firstName,
-          avatar: user.avatar
+          lastName: user.lastName,
+          avatar: user.avatar,
         },
         chat: chatId,
+        system: false,
         createdAt: new Date().toISOString(),
       };
       const messageForDB = {
         content: message,
         sender: user._id,
         chat: chatId,
+        system: false,
       };
       const membersSocket = GetUserSocketId(members);
       io.to(membersSocket).emit(socketEvent.NewMessage, {

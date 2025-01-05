@@ -1,5 +1,6 @@
 import mongoose, { Types } from "mongoose";
 
+
 export interface IMessage {
   content: string;
   attachments: {
@@ -17,6 +18,10 @@ export interface MessageDocument extends IMessage, mongoose.Document {
 const messageSchema = new mongoose.Schema(
   {
     content: String,
+    system: {
+      type: Boolean,
+      default: false,
+    },
     attachments: [
       {
         public_id: {
