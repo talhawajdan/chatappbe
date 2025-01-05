@@ -28,6 +28,7 @@ const isAuthenticated = (
         "Please login To access this Route."
       );
     }
+     req.user = decodedToken;
     req.userId = decodedToken._id;
     req.user = decodedToken;
     next();
