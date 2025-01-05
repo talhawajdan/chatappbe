@@ -23,9 +23,9 @@ const ioServer = async (server: any, app: any) => {
   const fe_url = config.get<string>("fe_url");
   const io = new Server(server, {
     cors: {
-      origin: fe_url ? fe_url : "http://localhost:3000",
+      origin: "*",
       methods: ["GET", "POST", "PUT", "DELETE"],
-      credentials: true,
+      credentials: false,
     },
   });
   io.use((socket: any, next) => {
